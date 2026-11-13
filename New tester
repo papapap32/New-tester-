@@ -1,5 +1,5 @@
 --═══════════════════════════════════════════════════════════════════
--- TFK HUB — Full 3000+ Line Version + Global Lists + Paz Features
+-- TFK HUB — Full Merge + Void/Bring + Force Field + Sync Autoclicker
 --═══════════════════════════════════════════════════════════════════
 
 local players = game:GetService("Players")
