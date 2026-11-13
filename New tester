@@ -52,7 +52,6 @@ function sendToChat(p1)
   if not ok then warn("Failed to send chat message:", result) end
 end
 
-
 starterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
 task.spawn(function()
   while true do
@@ -1194,8 +1193,8 @@ end
 -- ═══════════════════════════════════════════════════════════════════
 -- AUTO CLICKER (TFK style, viewport click) + PC AURA SYNC
 -- ═══════════════════════════════════════════════════════════════════
-local autoClickerToggleRef   -- we'll assign after creating
-local pcAuraToggleRef        -- we'll assign after creating
+autoClickerToggleRef   -- we'll assign after creating
+pcAuraToggleRef        -- we'll assign after creating
 local autoClickerThread = nil
 local autoClickerInternalState = false
 
@@ -2813,7 +2812,7 @@ NoSlowToggle = invisibilitiesTab:CreateToggle({
 })
 
 --═══════════════════════════════════════════════════════════════════
--- NEW: WHITELIST TAB
+-- NEW: WHITELIST TAB (Fixed locals by using global vars)
 --═══════════════════════════════════════════════════════════════════
 local whitelistTab = window:CreateTab("Whitelist", "list")
 
@@ -2823,7 +2822,7 @@ whitelistTab:CreateParagraph({
   Title = "Protected Players",
   Content = "These players are exempt from all features (PC Aura, Force Field, Void/Bring, etc). Add names separated by commas or spaces.",
 })
-local globalWhitelistInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Global Whitelist",
   PlaceholderText = "Enter names (comma or space separated)...",
   CurrentValue = CONFIG.GlobalWhitelist,
@@ -2843,8 +2842,6 @@ whitelistTab:CreateButton({
   Name = "Clear Whitelist",
   Callback = function()
     CONFIG.GlobalWhitelist = ""
-    if globalWhitelistInput then globalWhitelistInput:Set("") end
-    f40()
     result2:Notify({ Title = "Whitelist", Content = "Cleared.", Duration = 2 })
   end,
 })
@@ -2855,7 +2852,7 @@ whitelistTab:CreateParagraph({
   Title = "Target List",
   Content = "If blank, Void/Bring will affect everyone (except whitelisted). Enter names separated by commas or spaces.",
 })
-local targetListInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Target List",
   PlaceholderText = "Leave blank for everyone, or enter names...",
   CurrentValue = CONFIG.BringTargetName,
@@ -2866,7 +2863,6 @@ whitelistTab:CreateButton({
   Name = "Clear Target List",
   Callback = function()
     CONFIG.BringTargetName = ""
-    if targetListInput then targetListInput:Set("") end
     result2:Notify({ Title = "Target List", Content = "Cleared.", Duration = 2 })
   end,
 })
@@ -2877,7 +2873,7 @@ whitelistTab:CreateParagraph({
   Title = "Gym Ban (Auto Void Loop)",
   Content = "Voids the selected players every 1 second. If the list is blank, it voids everyone.",
 })
-local gymBanListInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Gym Ban Target List",
   PlaceholderText = "Leave blank to void everyone, or enter names...",
   CurrentValue = CONFIG.GymBanTargetList,
@@ -2888,11 +2884,10 @@ whitelistTab:CreateButton({
   Name = "Clear Gym Ban List",
   Callback = function()
     CONFIG.GymBanTargetList = ""
-    if gymBanListInput then gymBanListInput:Set("") end
     result2:Notify({ Title = "Gym Ban List", Content = "Cleared.", Duration = 2 })
   end,
 })
-local gymBanToggle = whitelistTab:CreateToggle({
+gymBanToggle = whitelistTab:CreateToggle({
   Name = "Enable Gym Ban (Void every 1s)",
   CurrentValue = false,
   Callback = function(on)
@@ -2908,7 +2903,7 @@ local gymBanToggle = whitelistTab:CreateToggle({
   end,
 })
 
--- Keybinds for Features
+-- Keybinds for Features (Uses global vars to avoid local limit)
 whitelistTab:CreateSection("Custom Keybinds")
 whitelistTab:CreateParagraph({
   Title = "Keybind Info",
@@ -2916,7 +2911,7 @@ whitelistTab:CreateParagraph({
 })
 
 -- Keybind for Gym Ban
-local gymBanKeybindInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Gym Ban Keybind",
   PlaceholderText = "e.g. G (single key)",
   CurrentValue = "G",
@@ -2925,13 +2920,11 @@ local gymBanKeybindInput = whitelistTab:CreateInput({
     if #txt > 0 then
       local key = txt:sub(1,1):upper()
       if key:match("[A-Z]") or key:match("[0-9]") then
-        local userInputService = game:GetService("UserInputService")
         local keyCode = Enum.KeyCode[key]
         if not keyCode then
           result2:Notify({ Title = "Keybind", Content = "Invalid key. Use A-Z or 0-9.", Duration = 3 })
           return
         end
-        -- Disconnect previous
         if CONFIG._gymBanKeybindConn then
           CONFIG._gymBanKeybindConn:Disconnect()
         end
@@ -2958,7 +2951,7 @@ local gymBanKeybindInput = whitelistTab:CreateInput({
 })
 
 -- Keybind for PC Aura (synced with AutoClicker)
-local pcAuraKeybindInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "PC Aura Keybind",
   PlaceholderText = "e.g. P (single key)",
   CurrentValue = "P",
@@ -2967,7 +2960,6 @@ local pcAuraKeybindInput = whitelistTab:CreateInput({
     if #txt > 0 then
       local key = txt:sub(1,1):upper()
       if key:match("[A-Z]") or key:match("[0-9]") then
-        local userInputService = game:GetService("UserInputService")
         local keyCode = Enum.KeyCode[key]
         if not keyCode then
           result2:Notify({ Title = "Keybind", Content = "Invalid key. Use A-Z or 0-9.", Duration = 3 })
@@ -3001,7 +2993,7 @@ local pcAuraKeybindInput = whitelistTab:CreateInput({
 })
 
 -- Keybind for Void
-local voidKeybindInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Void Keybind",
   PlaceholderText = "e.g. V (single key)",
   CurrentValue = "V",
@@ -3010,7 +3002,6 @@ local voidKeybindInput = whitelistTab:CreateInput({
     if #txt > 0 then
       local key = txt:sub(1,1):upper()
       if key:match("[A-Z]") or key:match("[0-9]") then
-        local userInputService = game:GetService("UserInputService")
         local keyCode = Enum.KeyCode[key]
         if not keyCode then
           result2:Notify({ Title = "Keybind", Content = "Invalid key. Use A-Z or 0-9.", Duration = 3 })
@@ -3034,7 +3025,7 @@ local voidKeybindInput = whitelistTab:CreateInput({
 })
 
 -- Keybind for Bring
-local bringKeybindInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Bring Keybind",
   PlaceholderText = "e.g. B (single key)",
   CurrentValue = "B",
@@ -3043,7 +3034,6 @@ local bringKeybindInput = whitelistTab:CreateInput({
     if #txt > 0 then
       local key = txt:sub(1,1):upper()
       if key:match("[A-Z]") or key:match("[0-9]") then
-        local userInputService = game:GetService("UserInputService")
         local keyCode = Enum.KeyCode[key]
         if not keyCode then
           result2:Notify({ Title = "Keybind", Content = "Invalid key. Use A-Z or 0-9.", Duration = 3 })
@@ -3067,7 +3057,7 @@ local bringKeybindInput = whitelistTab:CreateInput({
 })
 
 -- Keybind for Force Field
-local forceFieldKeybindInput = whitelistTab:CreateInput({
+whitelistTab:CreateInput({
   Name = "Force Field Keybind",
   PlaceholderText = "e.g. F (single key)",
   CurrentValue = "F",
@@ -3076,7 +3066,6 @@ local forceFieldKeybindInput = whitelistTab:CreateInput({
     if #txt > 0 then
       local key = txt:sub(1,1):upper()
       if key:match("[A-Z]") or key:match("[0-9]") then
-        local userInputService = game:GetService("UserInputService")
         local keyCode = Enum.KeyCode[key]
         if not keyCode then
           result2:Notify({ Title = "Keybind", Content = "Invalid key. Use A-Z or 0-9.", Duration = 3 })
