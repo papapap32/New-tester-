@@ -2,9 +2,10 @@
 -- TFK HUB — Full Merge + Void/Bring + Force Field + Sync Autoclicker
 --═══════════════════════════════════════════════════════════════════
 
--- WHITELIST CHECK (Moved to the top so it stops the script immediately)
+-- WHITELIST & CUSTOM LOADING POP-UP
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
 
 local WHITELIST = {
     4579527842,  -- PAZ
@@ -22,8 +23,68 @@ local function isPlayerWhitelisted(userId)
     return false
 end
 
-if not isPlayerWhitelisted(localPlayer.UserId) then
-    error("❌ You are not whitelisted to use this script. (ID: " .. localPlayer.UserId .. ")")
+-- Create the Custom Pop-up
+local loadingGui = Instance.new("ScreenGui")
+loadingGui.Name = "TFKLoadingGui"
+loadingGui.ResetOnSpawn = false
+loadingGui.IgnoreGuiInset = true
+loadingGui.Parent = CoreGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -75)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 15, 15)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = loadingGui
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+
+local stroke = Instance.new("UIStroke", mainFrame)
+stroke.Color = Color3.fromRGB(220, 50, 50)
+stroke.Thickness = 2
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 60)
+titleLabel.Position = UDim2.new(0, 0, 0, 20)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "LOADING..."
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 22
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = mainFrame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 40)
+statusLabel.Position = UDim2.new(0, 0, 0, 80)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Checking Whitelist..."
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextSize = 16
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.Parent = mainFrame
+
+task.wait(1) -- Fake loading delay
+
+if isPlayerWhitelisted(localPlayer.UserId) then
+    -- Whitelisted: Show Loading Text and continue
+    titleLabel.Text = "LOADING TFK/PAZ SCRIPTS"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    statusLabel.Text = "Access Granted. Welcome!"
+    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    
+    task.wait(1.5) -- Give them time to read it
+    loadingGui:Destroy()
+else
+    -- Not Whitelisted: Show kick message and stop script
+    titleLabel.Text = "ACCESS DENIED"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+    statusLabel.Text = "ASK KEEM/PAZ TO BE WHITELISTED"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    stroke.Color = Color3.fromRGB(255, 50, 50)
+    
+    task.wait(3.5) -- Give them time to read the message
+    loadingGui:Destroy()
+    error("❌ Not Whitelisted: Ask KEEM/PAZ to be whitelisted.")
+    return
 end
 
 print("✅ Whitelist passed. Loading TFK HUB...")
